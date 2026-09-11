@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>公募产品对标 · 每日看板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f7fc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding: 24px 32px;
+            color: #1a2332;
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+            background: #ffffff;
+            padding: 20px 28px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 20, 50, 0.06);
+        }
+        .header-left h1 {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: #0b1a33;
+        }
+        .header-left .sub {
+            font-size: 14px;
+            color: #6b7a8f;
+            margin-top: 4px;
+        }
+        .header-right {
+            text-align: right;
+            font-size: 14px;
+            color: #4a5a72;
+        }
+        .header-right .badge {
+            display: inline-block;
+            background: #eef3fe;
+            color: #2563eb;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        .header-right .update-time {
+            margin-top: 6px;
+            color: #6b7a8f;
+        }
+
+        /* 统计卡片 */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .stat-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 8px rgba(0, 20, 50, 0.05);
+            border-left: 4px solid #2563eb;
+        }
+        .stat-card .num {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0b1a33;
+            line-height: 1.2;
+        }
+        .stat-card .label {
+            font-size: 13px;
+            color: #6b7a8f;
+            margin-top: 4px;
+        }
+        .stat-card.green {
+            border-left-color: #16a34a;
+        }
+        .stat-card.orange {
+            border-left-color: #f59e0b;
+        }
+        .stat-card.purple {
+            border-left-color: #8b5cf6;
+        }
+        .stat-card.cyan {
+            border-left-color: #06b6d4;
+        }
+
+        /* 表格卡片 */
+        .section {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 20, 50, 0.05);
+            padding: 20px 24px 24px;
+            margin-bottom: 28px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0b1a33;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .tag {
+            font-size: 12px;
+            background: #eef3fe;
+            color: #2563eb;
+            padding: 0 12px;
+            border-radius: 12px;
+            font-weight: 500;
+            line-height: 22px;
+        }
+        .section-desc {
+            font-size: 14px;
+            color: #6b7a8f;
+            margin-bottom: 16px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 600px;
+        }
+        thead {
+            background: #f8faff;
+            border-bottom: 2px solid #e6edf5;
+        }
+        th {
+            text-align: left;
+            padding: 12px 12px 10px 12px;
+            font-weight: 600;
+            color: #2d3a4f;
+            white-space: nowrap;
+            font-size: 13px;
+            letter-spacing: 0.2px;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #edf2f7;
+            color: #1e2a3a;
+            vertical-align: middle;
+        }
+        tbody tr:hover {
+            background: #fafcff;
+        }
+        .text-muted {
+            color: #7a8a9e;
+            font-size: 13px;
+        }
+        .text-small {
+            font-size: 12px;
+            color: #6b7a8f;
+        }
+        .type-badge {
+            display: inline-block;
+            background: #eef3fe;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #2563eb;
+            white-space: nowrap;
+        }
+        .type-badge.orange {
+            background: #fef3e2;
+            color: #d97706;
+        }
+        .type-badge.green {
+            background: #e6f7e6;
+            color: #16a34a;
+        }
+        .type-badge.purple {
+            background: #f0edff;
+            color: #7c3aed;
+        }
+        .type-badge.cyan {
+            background: #e0f7fa;
+            color: #0891b2;
+        }
+        .type-badge.pink {
+            background: #fce7f3;
+            color: #db2777;
+        }
+
+        .footer {
+            text-align: center;
+            color: #8a9aae;
+            font-size: 13px;
+            padding: 20px 0 8px;
+            border-top: 1px solid #edf2f7;
+            margin-top: 8px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px 14px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 16px 18px;
+            }
+            .header-right {
+                text-align: left;
+                width: 100%;
+            }
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .stat-card .num {
+                font-size: 22px;
+            }
+            .section {
+                padding: 14px 14px 18px;
+            }
+            th,
+            td {
+                padding: 8px 8px;
+                font-size: 13px;
+            }
+            table {
+                font-size: 13px;
+                min-width: 480px;
+            }
+        }
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card {
+                padding: 12px 14px;
+            }
+            .stat-card .num {
+                font-size: 20px;
+            }
+            .header-left h1 {
+                font-size: 20px;
+            }
+        }
+
+        /* 滚动条美化 */
+        .table-wrap::-webkit-scrollbar {
+            height: 6px;
+        }
+        .table-wrap::-webkit-scrollbar-track {
+            background: #f0f2f6;
+            border-radius: 4px;
+        }
+        .table-wrap::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .table-wrap::-webkit-scrollbar-thumb:hover {
+            background: #a0b3cc;
+        }
+
+        /* 空状态 */
+        .empty-tip {
+            padding: 24px 0;
+            text-align: center;
+            color: #8a9aae;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+
+        <!-- 头部 -->
+        <div class="header">
+            <div class="header-left">
+                <h1>📊 公募产品对标 · 每日看板</h1>
+                <div class="sub">数据来源：Wind · 更新频率：每日</div>
+            </div>
+            <div class="header-right">
+                <span class="badge">⚡ 数据实时同步</span>
+                <div class="update-time" id="updateTime">加载中…</div>
+            </div>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="stats" id="statsContainer">
+            <!-- 由 JS 动态渲染 -->
+        </div>
+
+        <!-- ========== 一、昨日成立产品 ========== -->
+        <div class="section">
+            <div class="section-title">
+                📋 昨日成立产品
+                <span class="tag" id="launchCount">0只</span>
+            </div>
+            <div class="section-desc">统计周期：昨日新成立公募基金</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>基金名称</th>
+                            <th>成立日</th>
+                            <th>规模（亿元）</th>
+                            <th>托管人</th>
+                            <th>类别</th>
+                        </tr>
+                    </thead>
+                    <tbody id="launchTableBody">
+                        <!-- JS 渲染 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== 二、昨日新上报产品 ========== -->
+        <div class="section">
+            <div class="section-title">
+                📤 昨日新上报产品
+                <span class="tag" id="reportCount">0只</span>
+            </div>
+            <div class="section-desc">统计周期：昨日上报的公募基金产品</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>基金名称</th>
+                            <th>基金类型</th>
+                            <th>上报日</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                        <!-- JS 渲染 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== 三、此前上报未受理 ========== -->
+        <div class="section">
+            <div class="section-title">
+                ⏳ 此前上报未受理
+                <span class="tag" id="pendingCount">0只</span>
+            </div>
+            <div class="section-desc" id="pendingDesc">加载中…</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>基金名称</th>
+                            <th>基金类型</th>
+                            <th>上报日</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingTableBody">
+                        <!-- JS 渲染 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========== 四、最新审批产品 ========== -->
+        <div class="section">
+            <div class="section-title">
+                ✅ 最新审批产品
+                <span class="tag" id="approvalCount">0只</span>
+            </div>
+            <div class="section-desc">昨日获批（审查决定日）的公募基金产品</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>基金名称</th>
+                            <th>基金类型</th>
+                            <th>接收日</th>
+                            <th>审查决定日</th>
+                            <th>审批周期（天）</th>
+                        </tr>
+                    </thead>
+                    <tbody id="approvalTableBody">
+                        <!-- JS 渲染 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="footer">
+            数据源自 Wind 资讯 · 每日自动更新 · 建信基金创新发展部
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  数据区 —— 由 Python 脚本从 Wind 提取后自动替换
+        // ============================================================
+
+        // 1. 昨日成立产品
+        const launchData = [
+    {
+        "name": "国泰海通中证港股通医疗主题指数A",
+        "date": "2026-09-10 00:00:00",
+        "scale": 0.1,
+        "type": "被动指数型基金",
+        "custodian": "中国建设银行股份有限公司"
+    },
+    {
+        "name": "华夏创业板算力基础设施ETF",
+        "date": "2026-09-10 00:00:00",
+        "scale": 3.32,
+        "type": "被动指数型基金",
+        "custodian": "中国建设银行股份有限公司"
+    },
+    {
+        "name": "广发中证工业有色金属主题ETF",
+        "date": "2026-09-10 00:00:00",
+        "scale": 2.63,
+        "type": "被动指数型基金",
+        "custodian": "上海浦东发展银行股份有限公司"
+    },
+    {
+        "name": "万家中证家电龙头指数A",
+        "date": "2026-09-10 00:00:00",
+        "scale": 2.71,
+        "type": "被动指数型基金",
+        "custodian": "中国农业银行股份有限公司"
+    }
+];
+
+        // 2. 昨日新上报产品
+        const reportData = [
+    {
+        "name": "富国中证全指软件交易型开放式指数证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "ETF"
+    },
+    {
+        "name": "人保科技创新混合型证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "普通混合"
+    },
+    {
+        "name": "圆信永丰瑞恒债券型证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "其他债券"
+    },
+    {
+        "name": "国泰海通上实租赁住房封闭式基础设施证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "REITs"
+    },
+    {
+        "name": "国泰海通稳健添瑞债券型证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "其他债券"
+    },
+    {
+        "name": "东方中证800指数增强型证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "股票指数"
+    },
+    {
+        "name": "银华卓识成长混合型证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "普通混合"
+    },
+    {
+        "name": "申万菱信中证卫星产业指数型发起式证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "股票指数"
+    },
+    {
+        "name": "天弘慧享增利混合型证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "普通混合"
+    },
+    {
+        "name": "招商中证细分化工产业主题指数型发起式证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "股票指数"
+    },
+    {
+        "name": "嘉实国证价值100交易型开放式指数证券投资基金联接基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "联接"
+    },
+    {
+        "name": "汇添富稳健添悦120天持有期混合型证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "普通混合"
+    },
+    {
+        "name": "人保远见智选混合型证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "普通混合"
+    },
+    {
+        "name": "浙商汇金安康保守养老目标一年持有期混合型发起式基金中基金(FOF)",
+        "date": "2026-09-10 00:00:00",
+        "type": "FOF"
+    },
+    {
+        "name": "华安晶澳科技新能源封闭式基础设施证券投资基金",
+        "date": "2026-09-10 00:00:00",
+        "type": "REITs"
+    }
+];
+
+        // 3. 此前上报未受理
+        const pendingData = [
+    {
+        "name": "山证资管恒益晋金三年滚动持有债券型发起式证券投资基金",
+        "date": "2026-08-28 00:00:00",
+        "type": "其他债券"
+    },
+    {
+        "name": "国寿安保高股息混合型证券投资基金",
+        "date": "2026-08-28 00:00:00",
+        "type": "普通混合"
+    },
+    {
+        "name": "中加聚享稳瑞债券型证券投资基金",
+        "date": "2026-08-28 00:00:00",
+        "type": "其他债券"
+    },
+    {
+        "name": "华宝国证消费电子主题交易型开放式指数证券投资基金",
+        "date": "2026-08-26 00:00:00",
+        "type": "ETF"
+    },
+    {
+        "name": "工银瑞信国证消费电子主题交易型开放式指数证券投资基金",
+        "date": "2026-08-24 00:00:00",
+        "type": "ETF"
+    },
+    {
+        "name": "申万菱信臻利债券型证券投资基金",
+        "date": "2026-08-24 00:00:00",
+        "type": "其他债券"
+    }
+];
+
+        // 4. 最新审批产品
+        const approvalData = [];
+
+        // ============================================================
+        //  渲染函数
+        // ============================================================
+
+        function renderStats() {
+            const totalLaunch = launchData.length;
+            const totalReport = reportData.length;
+            const totalPending = pendingData.length;
+            const totalApproval = approvalData.length;
+
+            const totalScale = launchData.reduce((s, item) => s + (item.scale || 0), 0);
+            const avgScale = totalLaunch > 0 ? totalScale / totalLaunch : 0;
+
+            const container = document.getElementById('statsContainer');
+            container.innerHTML = `
+                    <div class="stat-card"><div class="num">${totalLaunch}</div><div class="label">📦 昨日成立</div></div>
+                    <div class="stat-card green"><div class="num">${totalReport}</div><div class="label">📤 昨日上报</div></div>
+                    <div class="stat-card orange"><div class="num">${totalPending}</div><div class="label">⏳ 未受理</div></div>
+                    <div class="stat-card purple"><div class="num">${totalApproval}</div><div class="label">✅ 昨日获批</div></div>
+                    <div class="stat-card cyan"><div class="num">${totalScale.toFixed(1)}</div><div class="label">💰 成立总规模（亿元）</div></div>
+                    <div class="stat-card"><div class="num">${avgScale.toFixed(2)}</div><div class="label">📈 平均规模（亿元）</div></div>
+                `;
+            document.getElementById('launchCount').textContent = totalLaunch + '只';
+            document.getElementById('reportCount').textContent = totalReport + '只';
+            document.getElementById('pendingCount').textContent = totalPending + '只';
+            document.getElementById('approvalCount').textContent = totalApproval + '只';
+        }
+
+        function renderTable(data, tbodyId, columns) {
+            const tbody = document.getElementById(tbodyId);
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${columns.length}" class="empty-tip">暂无数据</td></tr>`;
+                return;
+            }
+            let html = '';
+            data.forEach(item => {
+                let row = '<tr>';
+                columns.forEach(col => {
+                    let val = item[col] ?? '-';
+                    if (col === 'type') {
+                        let cls = 'type-badge';
+                        if (String(val).includes('ETF')) cls += ' green';
+                        else if (String(val).includes('FOF')) cls += ' purple';
+                        else if (String(val).includes('债券') || String(val).includes('债')) cls += ' orange';
+                        else if (String(val).includes('股票') || String(val).includes('指数')) cls += ' cyan';
+                        else if (String(val).includes('混合')) cls += ' pink';
+                        row += `<td><span class="${cls}">${val}</span></td>`;
+                    } else if (col === 'scale') {
+                        row += `<td>${typeof val === 'number' ? val.toFixed(2) : val}</td>`;
+                    } else {
+                        // 日期字段只保留 YYYY-MM-DD
+                        if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)) {
+                            val = val.slice(0, 10);
+                        }
+                        row += `<td>${val}</td>`;
+                    }
+                });
+                row += '</tr>';
+                html += row;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function setUpdateTime() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            const h = String(now.getHours()).padStart(2, '0');
+            const min = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('updateTime').textContent =
+                `📅 数据更新：${y}-${m}-${d} ${h}:${min}`;
+        }
+
+        function setPendingDesc() {
+            const today = new Date();
+
+            // 两周前那一天
+            const twoWeeksAgo = new Date(today);
+            twoWeeksAgo.setDate(today.getDate() - 14);
+
+            // 那一周的周一（getDay: 0=周日, 1=周一 ... 6=周六）
+            const day = twoWeeksAgo.getDay();
+            const diffToMonday = (day === 0 ? -6 : 1 - day);
+            const monday = new Date(twoWeeksAgo);
+            monday.setDate(twoWeeksAgo.getDate() + diffToMonday);
+
+            // 那一周的周五
+            const friday = new Date(monday);
+            friday.setDate(monday.getDate() + 4);
+
+            // 昨日
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);
+
+            const fmt = (d) => `${d.getMonth() + 1}月${d.getDate()}日`;
+
+            document.getElementById('pendingDesc').textContent =
+                `本期（${fmt(monday)}-${fmt(friday)}）上报，截至${fmt(yesterday)}尚未受理`;
+        }
+
+        // ============================================================
+        //  初始化
+        // ============================================================
+        renderStats();
+
+        // 昨日成立
+        renderTable(launchData, 'launchTableBody', ['name', 'date', 'scale', 'custodian', 'type']);
+
+        // 昨日上报
+        renderTable(reportData, 'reportTableBody', ['name', 'type', 'date']);
+
+        // 未受理
+        renderTable(pendingData, 'pendingTableBody', ['name', 'type', 'date']);
+
+        // 审批
+        renderTable(approvalData, 'approvalTableBody', ['name', 'type', 'receive', 'decide', 'days']);
+
+        setUpdateTime();
+        setPendingDesc();
+
+        // ============================================================
+        //  控制台提示
+        // ============================================================
+        console.log('✅ 公募产品对标看板已加载');
+        console.log('📌 数据来源：Wind 资讯');
+        console.log('🔄 每日自动更新：由 Python 脚本从 Wind API 拉取最新数据并替换数据数组。');
+    </script>
+</body>
+</html>
